@@ -22,7 +22,7 @@ namespace TaxCalculation.Core.Entities.TaxCalculation
             result.NetMonthlySalary = CalculateMonthly(result.NetAnnualSalary);
             result.MonthlyTaxPaid = CalculateMonthly(result.AnnualTaxPaid);
 
-            //_unitOfWork.TaxStatistics.Create(result.ToDomainModel(grossAnnualSalary));
+            _unitOfWork.TaxStatistics.Create(result.ToDomainModel(grossAnnualSalary));
             await _unitOfWork.SaveAsync();
 
             return result;
@@ -33,13 +33,9 @@ namespace TaxCalculation.Core.Entities.TaxCalculation
 
         private decimal CalculateAnnualTaxPaid(int grossAnnualSalary)
         {
-            if(grossAnnualSalary <= _settings.BandA)
-                return 0;
-
-            if(grossAnnualSalary <= _settings.BandB)
-                return (grossAnnualSalary - _settings.BandA) * _settings.BasicRate;
-             else
-                return (_settings.BandB - _settings.BandA) * _settings.BasicRate + (grossAnnualSalary - _settings.BandB) * _settings.HigherRate;
+            decimal tax = Math.Max(0, Math.Min(grossAnnualSalary, _settings.BandB) - _settings.BandA) * _settings.BasicRate;
+            tax += Math.Max(0, grossAnnualSalary - _settings.BandB) * _settings.HigherRate;
+            return tax;
         }
     }
 }

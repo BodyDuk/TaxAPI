@@ -3,7 +3,7 @@ using Xunit;
 
 using TaxCalculation.Core.Entities.TaxCalculation;
 using TaxCalculation.Core.Data;
-using TaxCalculator.Domain.Entities;
+using TaxCalculation.Domain.Entities;
 
 namespace TaxCalculation.Tests
 {
@@ -18,6 +18,9 @@ namespace TaxCalculation.Tests
             _mockTaxSettings = new Mock<ITaxSettings>();
             _mockUnitOfWork = new Mock<IUnitOfWork>();
 
+            var mockTaxStatistics = new Mock<ITaxStatisticsRepository>();
+            _mockUnitOfWork.Setup(uow => uow.TaxStatistics).Returns(mockTaxStatistics.Object);
+
             _mockTaxSettings.Setup(s => s.BandA).Returns(5000);
             _mockTaxSettings.Setup(s => s.BandB).Returns(20000);
             _mockTaxSettings.Setup(s => s.BasicRate).Returns(0.2m);
@@ -30,16 +33,16 @@ namespace TaxCalculation.Tests
         [Fact]
         public async Task GetIncomeTax_ShouldReturnCorrectTaxCalculation_WhenGrossAnnualSalaryIsValid()
         {
-            int grossAnnualSalary = 25000;
+            int grossAnnualSalary = 40000;
 
             var result = await _taxCalculationInteractor.GetIncomeTax(grossAnnualSalary);
 
             Assert.NotNull(result);
-            Assert.Equal(2083.33m, result.GrossMonthlySalary);
-            Assert.Equal(4000m, result.AnnualTaxPaid);
-            Assert.Equal(17000m, result.NetAnnualSalary);
-            Assert.Equal(1416.67m, result.NetMonthlySalary);
-            Assert.Equal(333.33m, result.MonthlyTaxPaid);
+            Assert.Equal(3333.33m, result.GrossMonthlySalary, precision: 2);
+            Assert.Equal(11000m, result.AnnualTaxPaid, precision: 2);
+            Assert.Equal(29000m, result.NetAnnualSalary, precision: 2);
+            Assert.Equal(2416.67m, result.NetMonthlySalary, precision: 2);
+            Assert.Equal(916.67m, result.MonthlyTaxPaid, precision: 2);
 
             _mockUnitOfWork.Verify(u => u.TaxStatistics.Create(It.IsAny<TaxStatisticsDto>()), Times.Once);
             _mockUnitOfWork.Verify(u => u.SaveAsync(), Times.Once);
@@ -54,9 +57,9 @@ namespace TaxCalculation.Tests
 
             Assert.NotNull(result);
             Assert.Equal(0m, result.AnnualTaxPaid);
-            Assert.Equal(grossAnnualSalary, result.NetAnnualSalary);
-            Assert.Equal(grossAnnualSalary / 12, result.NetMonthlySalary);
-            Assert.Equal(0m, result.MonthlyTaxPaid);
+            Assert.Equal(grossAnnualSalary, result.NetAnnualSalary, precision: 2);
+            Assert.Equal(grossAnnualSalary / 12m, result.NetMonthlySalary, precision: 2);
+            Assert.Equal(0m, result.MonthlyTaxPaid, precision: 2);
 
             _mockUnitOfWork.Verify(u => u.TaxStatistics.Create(It.IsAny<TaxStatisticsDto>()), Times.Once);
             _mockUnitOfWork.Verify(u => u.SaveAsync(), Times.Once);
@@ -70,11 +73,11 @@ namespace TaxCalculation.Tests
             var result = await _taxCalculationInteractor.GetIncomeTax(grossAnnualSalary);
 
             Assert.NotNull(result);
-            Assert.Equal(1250m, result.GrossMonthlySalary);
-            Assert.Equal(2000m, result.AnnualTaxPaid);
-            Assert.Equal(13000m, result.NetAnnualSalary);
-            Assert.Equal(1083.33m, result.NetMonthlySalary);
-            Assert.Equal(166.67m, result.MonthlyTaxPaid);
+            Assert.Equal(1250m, result.GrossMonthlySalary, precision: 2);
+            Assert.Equal(2000m, result.AnnualTaxPaid, precision: 2);
+            Assert.Equal(13000m, result.NetAnnualSalary, precision: 2);
+            Assert.Equal(1083.33m, result.NetMonthlySalary, precision: 2);
+            Assert.Equal(166.67m, result.MonthlyTaxPaid, precision: 2);
 
             _mockUnitOfWork.Verify(u => u.TaxStatistics.Create(It.IsAny<TaxStatisticsDto>()), Times.Once);
             _mockUnitOfWork.Verify(u => u.SaveAsync(), Times.Once);

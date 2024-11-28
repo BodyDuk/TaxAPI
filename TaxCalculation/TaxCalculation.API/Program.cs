@@ -9,14 +9,9 @@ internal class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
             ?? throw new InvalidOperationException("connection_string_not_found.");
-        builder.Services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlServer(
-                connectionString,
-                b => b.MigrationsAssembly("TaxCalculation.Data")
-            )
-        );
+        builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
 
         builder.Services.AddRepositories();
         builder.Services.AddInteractors();
@@ -39,6 +34,12 @@ internal class Program
         app.UseAuthorization();
 
         app.MapControllers();
+
+        using(var serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
+        {
+            var appDbContext = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
+            appDbContext.Database.EnsureCreated();
+        }
 
         app.Run();
     }

@@ -6,16 +6,10 @@ using TaxCalculation.Core.Data;
 
 namespace TaxCalculation.Data.Common
 {
-    public class GenericRepository<T>:IRepository<T> where T : class
+    public class GenericRepository<T>(AppDbContext context):IRepository<T> where T : class
     {
-        protected AppDbContext db;
-        protected DbSet<T> dbSet;
-
-        public GenericRepository(AppDbContext context)
-        {
-            this.db = context;
-            this.dbSet = context.Set<T>();
-        }
+        protected AppDbContext db = context;
+        protected DbSet<T> dbSet = context.Set<T>();
 
         public void Create(T item) => db.Add(item);
         public T? GetById(int id) => db.Find<T>(id);
@@ -36,7 +30,7 @@ namespace TaxCalculation.Data.Common
 
             if(orderBy != null)
                 query = orderBy(query);
-            return query.ToList();
+            return [.. query];
         }
     }
 }

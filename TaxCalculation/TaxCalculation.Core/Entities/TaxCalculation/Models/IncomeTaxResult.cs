@@ -1,4 +1,4 @@
-﻿using TaxCalculator.Domain.Entities;
+﻿using TaxCalculation.Domain.Entities;
 
 namespace TaxCalculation.Core.Entities.TaxCalculation.Models
 {

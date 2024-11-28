@@ -3,19 +3,13 @@ using TaxCalculation.Core.Entities.TaxCalculation;
 
 namespace TaxCalculation.Data.Common
 {
-    public class UnitOfWork:IUnitOfWork
+    public class UnitOfWork(
+        AppDbContext dbContext,
+        ITaxStatisticsRepository taxStatistics):IUnitOfWork
     {
         private bool disposed = false;
-        private readonly AppDbContext db;
-        public ITaxStatisticsRepository TaxStatistics { get; private set; }
-
-        public UnitOfWork(
-            AppDbContext dbContext,
-            ITaxStatisticsRepository taxStatistics)
-        {
-            this.db = dbContext;
-            TaxStatistics = taxStatistics;
-        }
+        private readonly AppDbContext db = dbContext;
+        public ITaxStatisticsRepository TaxStatistics { get; private set; } = taxStatistics;
 
         public async Task SaveAsync()
             => await db.SaveChangesAsync();

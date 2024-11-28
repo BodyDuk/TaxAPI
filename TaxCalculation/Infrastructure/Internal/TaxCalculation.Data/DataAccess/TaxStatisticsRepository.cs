@@ -1,16 +1,11 @@
 ﻿using TaxCalculation.Core.Entities.TaxCalculation;
 using TaxCalculation.Data.Common;
-
-using TaxCalculator.Domain.Entities;
+using TaxCalculation.Domain.Entities;
 
 namespace TaxCalculation.Data.DataAccess
 {
-    public class TaxStatisticsRepository:GenericRepository<TaxStatisticsDto>, ITaxStatisticsRepository
+    public class TaxStatisticsRepository(AppDbContext context):GenericRepository<TaxStatisticsDto>(context), ITaxStatisticsRepository
     {
-        public TaxStatisticsRepository(AppDbContext context) : base(context)
-        {
-        }
-
-        public IEnumerable<TaxStatisticsDto> GetAll() => db.TaxStatistics.Select(tx => tx).ToList();
+        public IEnumerable<TaxStatisticsDto> GetAll() => [.. db.TaxStatistics.Select(tx => tx)];
     }
 }

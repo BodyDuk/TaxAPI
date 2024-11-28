@@ -28,9 +28,7 @@ namespace TaxCalculation.API.Settings
             services.AddSingleton<ITaxSettings>(provider =>
             {
                 var configuration = provider.GetRequiredService<IConfiguration>();
-                var taxSettingsSection = configuration.GetSection("TaxSettings");
-                if(taxSettingsSection == null)
-                    throw new InvalidOperationException("tax_settings_missing");
+                var taxSettingsSection = configuration.GetSection("TaxSettings") ?? throw new InvalidOperationException("tax_settings_missing");
                 var taxSettings = new TaxSettings();
                 taxSettingsSection.Bind(taxSettings);
                 return taxSettings;

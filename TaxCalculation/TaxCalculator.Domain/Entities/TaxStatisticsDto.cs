@@ -1,4 +1,4 @@
-﻿namespace TaxCalculator.Domain.Entities
+﻿namespace TaxCalculation.Domain.Entities
 {
     public class TaxStatisticsDto
     {

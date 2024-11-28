@@ -1,20 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-using TaxCalculator.Domain.Entities;
+using TaxCalculation.Domain.Entities;
 
 namespace TaxCalculation.Data.Common
 {
-    public class AppDbContext:DbContext
+    public class AppDbContext(DbContextOptions<AppDbContext> options):DbContext(options)
     {
         public DbSet<TaxStatisticsDto> TaxStatistics { get; set; }
-
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-        { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
+           
             modelBuilder.Entity<TaxStatisticsDto>(entity =>
             {
                 entity.HasKey(p => p.Id);
